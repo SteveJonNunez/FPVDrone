@@ -1,2 +1,0 @@
-C:/PROGRAMMING/AndroidExperiment2016/ardrone-sdk-android/app/src/main/obj/local/armeabi/objs-debug/glfix/fix-GLES20.o: \
- C:/PROGRAMMING/AndroidExperiment2016/ardrone-sdk-android/app/src/main/jni/GLFIX/fix-GLES20.c

@@ -1,1 +1,1 @@
-include ':mobile', ':wear', ':sharedclasses', ':common', ':core', ':ardrone'
+include ':mobile', ':wear', ':sharedclasses', ':common', ':core'
