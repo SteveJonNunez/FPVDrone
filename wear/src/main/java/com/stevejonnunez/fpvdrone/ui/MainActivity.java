@@ -6,25 +6,20 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.PutDataMapRequest;
-import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.stevejonnunez.fpvdrone.R;
 import com.stevejonnunez.fpvdrone.rxEvent.ListenerServiceEvent;
-import com.stevejonnunez.sharedclasses.Message;
-import com.stevejonnunez.sharedclasses.MessagePath;
 import com.stevejonnunez.fpvdrone.util.dagger.DaggerActivity;
 import com.stevejonnunez.fpvdrone.util.rx.RxEventBus;
+import com.stevejonnunez.sharedclasses.Message;
+import com.stevejonnunez.sharedclasses.MessagePath;
 
 import java.util.List;
 
@@ -32,7 +27,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends DaggerActivity implements SensorEventListener, GoogleApiClient.ConnectionCallbacks,
@@ -149,16 +143,19 @@ public class MainActivity extends DaggerActivity implements SensorEventListener,
                     float valueY = sensorEvent.values[1];
                     float valueZ = sensorEvent.values[2];
 
-                    if (Math.round(valueX) - x >= 1) {
-                        x = Math.round(valueX);
+                    int absValueX = Math.round(valueX);
+                    if (Math.abs(absValueX - x) >= 1) {
+                        x = absValueX;
                         sendMessageInThread(new Message(MessagePath.ACCELEROMETER_X_MESSAGE_PATH, String.valueOf(valueX)));
                     }
-                    if (Math.round(valueY) - y >= 1) {
-                        y = Math.round(valueY);
+                    int absValueY = Math.round(valueY);
+                    if (Math.abs(absValueY - y) >= 1) {
+                        y = absValueY;
                         sendMessageInThread(new Message(MessagePath.ACCELEROMETER_Y_MESSAGE_PATH, String.valueOf(valueY)));
                     }
-                    if (Math.round(valueZ) - z >= 1) {
-                        z = Math.round(valueZ);
+                    int absValueZ = Math.round(valueZ);
+                    if (Math.abs(absValueZ - z) >= 1) {
+                        z = absValueZ;
                         sendMessageInThread(new Message(MessagePath.ACCELEROMETER_Z_MESSAGE_PATH, String.valueOf(valueZ)));
                     }
                 }).subscribeOn(Schedulers.io())
