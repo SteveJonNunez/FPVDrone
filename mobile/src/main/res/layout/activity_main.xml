@@ -1,16 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.stevejonnunez.fpvdrone.MainActivity">
+    android:paddingTop="@dimen/activity_vertical_margin">
 
     <TextView
+        android:id="@+id/accelerometerLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="Accelerometer" />
+
+    <TextView
+        android:id="@+id/accelerometerXLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/accelerometerLabel"
+        android:text="x: " />
+
+    <TextView
+        android:id="@+id/accelerometerXData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/accelerometerXLabel"
+        android:layout_toEndOf="@id/accelerometerXLabel"
+        android:text="1" />
+
+    <TextView
+        android:id="@+id/accelerometerYLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/accelerometerXLabel"
+        android:text="y: " />
+
+    <TextView
+        android:id="@+id/accelerometerYData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/accelerometerYLabel"
+        android:layout_toEndOf="@id/accelerometerYLabel"
+        android:text="2" />
+
+    <TextView
+        android:id="@+id/accelerometerZLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/accelerometerYLabel"
+        android:text="z: " />
+
+    <TextView
+        android:id="@+id/accelerometerZData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/accelerometerZLabel"
+        android:layout_toEndOf="@id/accelerometerZLabel"
+        android:text="3" />
+
+    <TextView
+        android:id="@+id/wearButtonPressedLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/accelerometerZLabel"
+        android:text="Wear Button Pressed: " />
+
+    <TextView
+        android:id="@+id/wearButtonPressedData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/wearButtonPressedLabel"
+        android:layout_toEndOf="@id/wearButtonPressedLabel"
+        android:text="3" />
+
+
 </RelativeLayout>
