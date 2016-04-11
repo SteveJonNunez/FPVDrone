@@ -22,10 +22,10 @@ import dagger.Provides;
                 ListenerService.class
         }
 )
-public class FRVDroneMobileApplicationModule {
+public class FPVDroneMobileApplicationModule {
     private Application application;
 
-    public FRVDroneMobileApplicationModule(Application application) {
+    public FPVDroneMobileApplicationModule(Application application) {
         this.application = application;
     }
 

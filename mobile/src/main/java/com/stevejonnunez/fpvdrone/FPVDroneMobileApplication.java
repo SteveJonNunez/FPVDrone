@@ -12,7 +12,7 @@ import dagger.ObjectGraph;
 /**
  * Created by kryonex on 4/10/2016.
  */
-public class FRVDroneMobileApplication extends DaggerApplication {
+public class FPVDroneMobileApplication extends DaggerApplication {
     private ObjectGraph objectGraph;
 
     @Override
@@ -29,7 +29,7 @@ public class FRVDroneMobileApplication extends DaggerApplication {
 
     @Override
     public List<Object> getModules() {
-        return Collections.singletonList(new FRVDroneMobileApplicationModule(this));
+        return Collections.singletonList(new FPVDroneMobileApplicationModule(this));
     }
 
     @Override
