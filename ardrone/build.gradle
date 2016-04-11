@@ -1,0 +1,72 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+    useLibrary 'org.apache.http.legacy'
+
+    defaultConfig {
+        applicationId "com.parrot.freeflight"
+        minSdkVersion 19
+        targetSdkVersion 22
+        versionCode 20000
+        versionName "2.0-SDK"
+
+        ndk {
+            moduleName "adfreeflight"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            // TODO proguard-rules seem outdated and useless cause it's only Android stuff
+        }
+    }
+    sourceSets.main {
+        jni.srcDirs = [] // This prevents the auto generation of Android.mk
+        jniLibs.srcDir 'src/main/jniLibs'
+        // This is not necessary unless you have precompiled libraries in your project.
+    }
+
+    task buildNative(type: Exec, description: 'Compile JNI source via NDK') {
+        def ndkCommand = "${android.ndkDirectory}/ndk-build"
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            ndkCommand += ".cmd"
+        }
+
+        commandLine ndkCommand,
+                '-C', file('src/main/jni').absolutePath,
+                'NDK_APPLICATION_MK=./Application.mk',
+                '-j', Runtime.runtime.availableProcessors(),
+                'all',
+                'NDK_DEBUG=1'
+    }
+
+    task cleanNative(type: Exec, description: 'Clean JNI object files') {
+        def ndkCommand = "${android.ndkDirectory}/ndk-build"
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            ndkCommand += ".cmd"
+        }
+
+        commandLine ndkCommand,
+                '-C', file('src/main/jni').absolutePath,
+                'clean'
+    }
+
+    clean.dependsOn 'cleanNative'
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn buildNative
+    }
+}
+
+dependencies {
+    compile "com.android.support:support-v13:23.2.1"
+//    compile files('libs/cardboard.jar')
+    compile project(':common')
+    compile project(':core')
+}
