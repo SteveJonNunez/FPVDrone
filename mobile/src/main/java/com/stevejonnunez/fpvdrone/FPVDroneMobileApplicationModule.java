@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.stevejonnunez.fpvdrone.rxEvent.ListenerServiceEvent;
 import com.stevejonnunez.fpvdrone.service.ListenerService;
+import com.stevejonnunez.fpvdrone.ui.BeginningActivity;
 import com.stevejonnunez.fpvdrone.ui.MainActivity;
 import com.stevejonnunez.fpvdrone.util.rx.RxEventBus;
 
@@ -19,6 +20,7 @@ import dagger.Provides;
 @Module(
         injects = {
                 MainActivity.class,
+                BeginningActivity.class,
                 ListenerService.class
         }
 )
