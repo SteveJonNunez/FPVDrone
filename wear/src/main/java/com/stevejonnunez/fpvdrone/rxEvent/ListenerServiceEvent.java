@@ -5,6 +5,8 @@ package com.stevejonnunez.fpvdrone.rxEvent;
  */
 public class ListenerServiceEvent {
     public static final String STOP_ACTIVITY = "stopActivity";
+    public static final String DRONE_FOUND = "droneFound";
+    public static final String DRONE_CONNECTED = "droneConnected";
 
     String message;
 

@@ -50,12 +50,18 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.ConnectActivity"
+            android:screenOrientation="landscape">
+        </activity>
+
 
         <service android:name=".service.ListenerService">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
+
+        <service android:name="com.parrot.freeflight.service.DroneControlService" />
 
         <meta-data
             android:name="com.google.android.gms.version"

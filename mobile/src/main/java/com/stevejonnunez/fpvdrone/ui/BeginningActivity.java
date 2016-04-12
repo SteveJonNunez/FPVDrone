@@ -1,24 +1,22 @@
 package com.stevejonnunez.fpvdrone.ui;
 
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.vrtoolkit.cardboard.CardboardView;
-import com.google.vrtoolkit.cardboard.Eye;
-import com.google.vrtoolkit.cardboard.HeadTransform;
-import com.google.vrtoolkit.cardboard.Viewport;
 import com.parrot.freeflight.tasks.CheckDroneNetworkAvailabilityTask;
 import com.stevejonnunez.fpvdrone.R;
-import com.stevejonnunez.fpvdrone.util.dagger.CardboardDaggerActivity;
+import com.stevejonnunez.fpvdrone.rxEvent.ListenerServiceEvent;
+import com.stevejonnunez.fpvdrone.ui.base.FPVDroneBaseActivity;
+import com.stevejonnunez.fpvdrone.util.rx.RxEventBus;
+import com.stevejonnunez.sharedclasses.MessagePath;
 import com.sveder.cardboardpassthrough.CardboardOverlayView;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.microedition.khronos.egl.EGLConfig;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -28,10 +26,7 @@ import rx.schedulers.Schedulers;
  * Created by kryonex on 4/11/2016.
  */
 public class BeginningActivity
-        extends CardboardDaggerActivity
-        implements CardboardView.StereoRenderer,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        extends FPVDroneBaseActivity {
 
     CardboardView cardboardView;
     CardboardOverlayView cardboardOverlayView;
@@ -40,11 +35,33 @@ public class BeginningActivity
 
     boolean droneOnNetwork = false;
 
+    @Inject
+    @Named("ListenerServiceEventBus")
+    RxEventBus<ListenerServiceEvent> rxListenerServiceEventBus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.beginning_activity);
+        setupActivity();
+        setupDroneConnectionChecker();
+        sendMessageInThread(MessagePath.START_WEAR_ACTIVITY_MESSAGE_PATH);
+    }
+
+    @Override
+    protected void onStart() {
+        rxListenerServiceEventBus.toObserverable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(event -> {
+                    if (event.getPath().equals(ListenerServiceEvent.CONNECT_TO_DRONE)) {
+                        connectToDrone();
+                    }
+                });
+        super.onStart();
+    }
+
+    private void setupActivity() {
+        setContentView(R.layout.blank_cardboard_activity);
         cardboardView = (CardboardView) findViewById(R.id.cardboard_view);
         cardboardOverlayView = (CardboardOverlayView) findViewById(R.id.overlay);
 
@@ -52,7 +69,9 @@ public class BeginningActivity
         setCardboardView(cardboardView);
 
         cardboardOverlayView.showText("Looking for drone...");
+    }
 
+    private void setupDroneConnectionChecker() {
         Observable.interval(5, TimeUnit.SECONDS)
                 .takeUntil(time -> droneOnNetwork)
                 .doOnNext(time -> this.checkDroneConnectivity())
@@ -60,63 +79,16 @@ public class BeginningActivity
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         time -> cardboardOverlayView.showText("Looking for drone..."),
-                        throwable -> {},
-                        () -> cardboardOverlayView.showText("Drone found\nPress \"Connect\" on your wear device.")
+                        throwable -> {
+                        },
+                        () -> {
+                            cardboardOverlayView.showText("Drone found\nPress \"Connect\" on your wear device.");
+                            sendMessageInThread(MessagePath.DRONE_FOUND_MESSAGE_PATH);
+                        }
                 );
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onNewFrame(HeadTransform headTransform) {
-
-    }
-
-    @Override
-    public void onDrawEye(Eye eye) {
-
-    }
-
-    @Override
-    public void onFinishFrame(Viewport viewport) {
-
-    }
-
-    @Override
-    public void onSurfaceChanged(int i, int i1) {
-
-    }
-
-    @Override
-    public void onSurfaceCreated(EGLConfig eglConfig) {
-
-    }
-
-    @Override
-    public void onRendererShutdown() {
-
-    }
-
-    @Override
-    protected List<Object> getModules() {
-        return null;
-    }
-
-    private void checkDroneConnectivity()
-    {
+    private void checkDroneConnectivity() {
         if (checkDroneConnectionTask != null && checkDroneConnectionTask.getStatus() != AsyncTask.Status.FINISHED) {
             checkDroneConnectionTask.cancel(true);
         }
@@ -131,5 +103,12 @@ public class BeginningActivity
         };
 
         checkDroneConnectionTask.executeOnExecutor(CheckDroneNetworkAvailabilityTask.THREAD_POOL_EXECUTOR, this);
+    }
+
+    private void connectToDrone() {
+        Intent intent = new Intent(this, ConnectActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }

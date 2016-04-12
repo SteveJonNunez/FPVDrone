@@ -43,6 +43,10 @@ public class ListenerService extends WearableListenerService {
             startActivity(intent);
         } else if (messageEvent.getPath().equals(MessagePath.STOP_WEAR_ACTIVITY_MESSAGE_PATH)) {
             rxListenerServiceEventBus.send(new ListenerServiceEvent(ListenerServiceEvent.STOP_ACTIVITY));
+        } else if (messageEvent.getPath().equals(MessagePath.DRONE_FOUND_MESSAGE_PATH)) {
+            rxListenerServiceEventBus.send(new ListenerServiceEvent(ListenerServiceEvent.DRONE_FOUND));
+        } else if (messageEvent.getPath().equals(MessagePath.DRONE_CONNECT_SUCCESS_MESSAGE_PATH)) {
+            rxListenerServiceEventBus.send(new ListenerServiceEvent(ListenerServiceEvent.DRONE_CONNECTED));
         }
     }
 }

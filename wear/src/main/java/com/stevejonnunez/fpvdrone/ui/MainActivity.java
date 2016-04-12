@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends DaggerActivity implements SensorEventListener, GoogleApiClient.ConnectionCallbacks,
@@ -71,9 +72,12 @@ public class MainActivity extends DaggerActivity implements SensorEventListener,
     @Override
     protected void onStart() {
         rxListenerServiceEventBus.toObserverable()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(event -> {
                     if (event.getMessage().equals(ListenerServiceEvent.STOP_ACTIVITY))
                         finish();
+                    else if (event.getMessage().equals(ListenerServiceEvent.DRONE_FOUND))
+                        button.setEnabled(true);
                 });
         super.onStart();
 
@@ -93,9 +97,9 @@ public class MainActivity extends DaggerActivity implements SensorEventListener,
 
     public void buttonPressed(View view) {
         if (!isConnected) {
-            isConnected = true;
-            button.setBackgroundResource(R.drawable.takeoff_button);
-            button.setText("Takeoff");
+            button.setText("Connecting");
+            button.setEnabled(false);
+            sendMessageInThread(new Message(MessagePath.CONNECT_TO_DRONE_MESSAGE_PATH));
         } else if (!isFlying) {
             isFlying = true;
             button.setBackgroundResource(R.drawable.land_button);
@@ -111,7 +115,7 @@ public class MainActivity extends DaggerActivity implements SensorEventListener,
     public void onSensorChanged(SensorEvent sensorEvent) {
         Sensor sensor = sensorEvent.sensor;
 
-        if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+        if (sensor.getType() == Sensor.TYPE_ACCELEROMETER && isConnected) {
             sendAccelerometerDataMessageInThread(sensorEvent);
         }
     }
@@ -172,9 +176,11 @@ public class MainActivity extends DaggerActivity implements SensorEventListener,
     }
 
     private void sendMessageToConnectedNodes(Message message) {
+        String path = message.getPath();
+        byte[] messageBytes = message.getMessage() == null?null:message.getMessage().getBytes();
         Wearable.NodeApi.getConnectedNodes(googleApiClient).setResultCallback(nodes -> {
             for (Node node : nodes.getNodes()) {
-                Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), message.getPath(), message.getMessage().getBytes());
+                Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, messageBytes);
             }
         });
     }

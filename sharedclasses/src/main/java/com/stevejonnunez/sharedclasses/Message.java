@@ -5,7 +5,11 @@ package com.stevejonnunez.sharedclasses;
  */
 public class Message {
     String path;
-    String message;
+    String message = null;
+
+    public Message(String path) {
+        this.path = path;
+    }
 
     public Message(String path, String message) {
         this.path = path;

@@ -1,11 +1,11 @@
 package com.stevejonnunez.fpvdrone.rxEvent;
 
-import com.google.android.gms.wearable.DataMap;
-
 /**
  * Created by kryonex on 4/10/2016.
  */
 public class ListenerServiceEvent {
+    public static final String CONNECT_TO_DRONE = "connectToDrone";
+
     public static final String ACCELEROMETER_X_WEAR_DATA = "accelerometerXWearData";
     public static final String ACCELEROMETER_Y_WEAR_DATA = "accelerometerYWearData";
     public static final String ACCELEROMETER_Z_WEAR_DATA = "accelerometerZWearData";
