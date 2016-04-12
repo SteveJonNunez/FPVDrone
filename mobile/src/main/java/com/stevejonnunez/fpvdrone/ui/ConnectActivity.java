@@ -24,8 +24,7 @@ import com.sveder.cardboardpassthrough.CardboardOverlayView;
 /**
  * Created by kryonex on 4/12/2016.
  */
-public class ConnectActivity
-        extends FPVDroneBaseActivity
+public class ConnectActivity extends FPVDroneBaseActivity
         implements ServiceConnection,
         DroneReadyReceiverDelegate,
         DroneConnectionChangeReceiverDelegate {
@@ -90,7 +89,7 @@ public class ConnectActivity
 
     @Override
     public void onDroneReady() {
-        openFPRDroneActivity();
+        openDroneControlActivity();
     }
 
     @Override
@@ -124,8 +123,13 @@ public class ConnectActivity
         bindService(new Intent(this, DroneControlService.class), this, Context.BIND_AUTO_CREATE);
     }
 
-    private void openFPRDroneActivity() {
+    private void openDroneControlActivity() {
         cardboardOverlayView.showText("Drone connection success.");
         sendMessageInThread(MessagePath.DRONE_CONNECT_SUCCESS_MESSAGE_PATH);
+
+        Intent intent = new Intent(this, DroneControlActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }
