@@ -6,6 +6,7 @@ import com.stevejonnunez.fpvdrone.rxEvent.ListenerServiceEvent;
 import com.stevejonnunez.fpvdrone.service.ListenerService;
 import com.stevejonnunez.fpvdrone.ui.BeginningActivity;
 import com.stevejonnunez.fpvdrone.ui.ConnectActivity;
+import com.stevejonnunez.fpvdrone.ui.DroneControlActivity;
 import com.stevejonnunez.fpvdrone.ui.MainActivity;
 import com.stevejonnunez.fpvdrone.util.rx.RxEventBus;
 
@@ -23,7 +24,8 @@ import dagger.Provides;
                 MainActivity.class,
                 BeginningActivity.class,
                 ListenerService.class,
-                ConnectActivity.class
+                ConnectActivity.class,
+                DroneControlActivity.class
         }
 )
 public class FPVDroneMobileApplicationModule {

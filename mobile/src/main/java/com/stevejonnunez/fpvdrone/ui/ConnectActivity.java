@@ -17,9 +17,14 @@ import com.parrot.freeflight.receivers.DroneReadyReceiver;
 import com.parrot.freeflight.receivers.DroneReadyReceiverDelegate;
 import com.parrot.freeflight.service.DroneControlService;
 import com.stevejonnunez.fpvdrone.R;
+import com.stevejonnunez.fpvdrone.rxEvent.ListenerServiceEvent;
 import com.stevejonnunez.fpvdrone.ui.base.FPVDroneBaseActivity;
+import com.stevejonnunez.fpvdrone.util.rx.RxEventBus;
 import com.stevejonnunez.sharedclasses.MessagePath;
 import com.sveder.cardboardpassthrough.CardboardOverlayView;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Created by kryonex on 4/12/2016.
@@ -34,6 +39,10 @@ public class ConnectActivity extends FPVDroneBaseActivity
     DroneControlService droneControlService;
     BroadcastReceiver droneReadyReceiver;
     BroadcastReceiver droneConnectionChangeReceiver;
+
+    @Inject
+    @Named("ListenerServiceEventBus")
+    RxEventBus<ListenerServiceEvent> rxListenerServiceEventBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,8 +137,9 @@ public class ConnectActivity extends FPVDroneBaseActivity
         sendMessageInThread(MessagePath.DRONE_CONNECT_SUCCESS_MESSAGE_PATH);
 
         Intent intent = new Intent(this, DroneControlActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("FORCE_COMBINED_CONTROL_MODE", false);
         startActivity(intent);
-        finish();
+//        finish();
     }
 }

@@ -14,7 +14,7 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.parrot.freeflight.ui.GLSurfaceToTextureView.Renderer;
+import com.parrot.freeflight.ui.GLTextureView.Renderer;
 import com.parrot.freeflight.ui.gl.GLBGVideoSprite;
 
 import javax.microedition.khronos.egl.EGLConfig;
