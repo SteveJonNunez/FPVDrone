@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId "com.stevejonnunez.fpvdrone"
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
 

@@ -41,4 +41,14 @@ public class FPVDroneMobileApplication extends DaggerApplication {
     public ObjectGraph createScopedGraph(Object... modules) {
         return objectGraph.plus(modules);
     }
+
+    static {
+        System.loadLibrary("avutil");
+        System.loadLibrary("swscale");
+        System.loadLibrary("avcodec");
+        System.loadLibrary("avfilter");
+        System.loadLibrary("avformat");
+        System.loadLibrary("avdevice");
+        System.loadLibrary("adfreeflight");
+    }
 }
