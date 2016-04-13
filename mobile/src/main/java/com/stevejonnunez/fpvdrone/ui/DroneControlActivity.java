@@ -38,9 +38,9 @@ public class DroneControlActivity extends FPVDroneBaseActivity
     GLTextureView glView2;
     VideoStageRenderer renderer;
 
-    double base = 0;
+    double baseAzimuth = 0;
     boolean flying = false;
-    boolean getBase= false;
+    boolean getBase = false;
 
     Orientation orientationSensor;
 
@@ -137,8 +137,8 @@ public class DroneControlActivity extends FPVDroneBaseActivity
 
     @Override
     public void orientation(Double AZIMUTH, Double PITCH, Double ROLL) {
-        if(getBase) {
-            base = AZIMUTH;
+        if (getBase) {
+            baseAzimuth = AZIMUTH;
             getBase = false;
         }
         altitude(ROLL);
@@ -158,16 +158,17 @@ public class DroneControlActivity extends FPVDroneBaseActivity
             droneConfig.setAltitudeLimit(DroneConfig.ALTITUDE_MIN);
             droneConfig.setVertSpeedMax(DroneConfig.VERT_SPEED_MIN);
             droneConfig.setYawSpeedMax(DroneConfig.YAW_MIN);
-            droneConfig.setTilt(15);
+            droneConfig.setTilt(DroneConfig.TILT_MIN);
             droneConfig.setOutdoorFlight(false);
             droneConfig.setOutdoorHull(true);
+
         }
     }
 
     private void triggerTakeOff() {
         if (droneControlService != null) {
             flying = !flying;
-            if(flying)
+            if (flying)
                 getBase = true;
             droneControlService.triggerTakeOff();
         }
@@ -177,11 +178,15 @@ public class DroneControlActivity extends FPVDroneBaseActivity
     private void roll(float val) {
         if (droneControlService != null && flying) {
             if (val < -6f) {
+                droneControlService.setProgressiveCommandEnabled(true);
                 droneControlService.setRoll(-1);
-            } else if (val > 6f)
+            } else if (val > 6f) {
+                droneControlService.setProgressiveCommandEnabled(true);
                 droneControlService.setRoll(1);
-            else
+            } else {
+                droneControlService.setProgressiveCommandEnabled(false);
                 droneControlService.setRoll(0);
+            }
         }
 
     }
@@ -189,11 +194,15 @@ public class DroneControlActivity extends FPVDroneBaseActivity
     private void pitch(float val) {
         if (droneControlService != null && flying) {
             if (val < -6f) {
-                droneControlService.setPitch(1);
-            } else if (val > 6f)
+                droneControlService.setProgressiveCommandEnabled(true);
                 droneControlService.setPitch(-1);
-            else
+            } else if (val > 6f) {
+                droneControlService.setProgressiveCommandEnabled(true);
+                droneControlService.setPitch(1);
+            } else {
+                droneControlService.setProgressiveCommandEnabled(false);
                 droneControlService.setPitch(0);
+            }
         }
     }
 
@@ -210,12 +219,17 @@ public class DroneControlActivity extends FPVDroneBaseActivity
 
     private void yaw(double val) {
         if (droneControlService != null && !getBase && flying) {
-            if (val < base-50) {
+            double realVal = modulosPositive(((180-baseAzimuth)+val),360.0);
+            if (realVal < 180 - 50) {
                 droneControlService.setYaw(-1);
-            } else if (val > base+50)
+            } else if (realVal > 180 + 50)
                 droneControlService.setYaw(1);
             else
                 droneControlService.setYaw(0);
         }
+    }
+
+    private double modulosPositive(double a, double b) {
+        return (((a % b) + b) % b);
     }
 }
