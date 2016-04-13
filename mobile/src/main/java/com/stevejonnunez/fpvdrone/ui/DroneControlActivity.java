@@ -42,6 +42,9 @@ public class DroneControlActivity extends FPVDroneBaseActivity
     boolean flying = false;
     boolean getBase = false;
 
+    boolean isRolling = false;
+    boolean isPitching = false;
+
     Orientation orientationSensor;
 
     DroneControlService droneControlService;
@@ -79,9 +82,9 @@ public class DroneControlActivity extends FPVDroneBaseActivity
                     } else if (event.getPath().equals(ListenerServiceEvent.TAKEOFF_DRONE)) {
                         triggerTakeOff();
                     } else if (event.getPath().equals(ListenerServiceEvent.ACCELEROMETER_X_WEAR_DATA)) {
-                        pitch(Float.valueOf(event.getMessage()));
+                        pitch(Integer.valueOf(event.getMessage()));
                     } else if (event.getPath().equals(ListenerServiceEvent.ACCELEROMETER_Y_WEAR_DATA)) {
-                        roll(Float.valueOf(event.getMessage()));
+                        roll(Integer.valueOf(event.getMessage()));
                     }
                 });
         orientationSensor.on(2);
@@ -175,35 +178,48 @@ public class DroneControlActivity extends FPVDroneBaseActivity
 
     }
 
-    private void roll(float val) {
+    private void roll(int val) {
         if (droneControlService != null && flying) {
-            if (val < -6f) {
-                droneControlService.setProgressiveCommandEnabled(true);
+            if (val < -6) {
+                isRolling = true;
+                setProgressiveCommand();
                 droneControlService.setRoll(-1);
-            } else if (val > 6f) {
-                droneControlService.setProgressiveCommandEnabled(true);
+            } else if (val > 6) {
+                isRolling = true;
+                setProgressiveCommand();
                 droneControlService.setRoll(1);
             } else {
-                droneControlService.setProgressiveCommandEnabled(false);
+                isRolling = false;
+                setProgressiveCommand();
                 droneControlService.setRoll(0);
             }
         }
 
     }
 
-    private void pitch(float val) {
+    private void pitch(int val) {
         if (droneControlService != null && flying) {
             if (val < -6f) {
-                droneControlService.setProgressiveCommandEnabled(true);
+                isPitching = true;
+                setProgressiveCommand();
                 droneControlService.setPitch(-1);
             } else if (val > 6f) {
-                droneControlService.setProgressiveCommandEnabled(true);
+                isPitching = true;
+                setProgressiveCommand();
                 droneControlService.setPitch(1);
             } else {
-                droneControlService.setProgressiveCommandEnabled(false);
+                isPitching = false;
+                setProgressiveCommand();
                 droneControlService.setPitch(0);
             }
         }
+    }
+
+    private void setProgressiveCommand() {
+        if(isRolling || isPitching)
+            droneControlService.setProgressiveCommandEnabled(true);
+        else
+            droneControlService.setProgressiveCommandEnabled(false);
     }
 
     private void altitude(double val) {
