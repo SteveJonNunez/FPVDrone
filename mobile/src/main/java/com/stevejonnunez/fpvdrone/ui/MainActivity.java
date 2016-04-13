@@ -1,11 +1,17 @@
 package com.stevejonnunez.fpvdrone.ui;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.golshadi.orientationSensor.sensors.Orientation;
+import com.golshadi.orientationSensor.utils.OrientationSensorInterface;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.stevejonnunez.fpvdrone.R;
@@ -23,13 +29,20 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends DaggerActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        SensorEventListener,
+        OrientationSensorInterface {
     private final String START_WEAR_ACTIVITY_MESSAGE = "/startWearActivity";
     private final String STOP_WEAR_ACTIVITY_MESSAGE = "/stopWearActivity";
 
     TextView accelorometerX;
     TextView accelorometerY;
     TextView accelorometerZ;
+
+    TextView gyroscopeX;
+    TextView gyroscopeY;
+    TextView gyroscopeZ;
+
     TextView buttonPressed;
 
     @Inject
@@ -37,6 +50,10 @@ public class MainActivity extends DaggerActivity implements GoogleApiClient.Conn
     RxEventBus<ListenerServiceEvent> rxListenerServiceEventBus;
 
     GoogleApiClient googleApiClient;
+
+    SensorManager sensorManager;
+    Sensor sensorGyroscope;
+    private Orientation orientationSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +63,11 @@ public class MainActivity extends DaggerActivity implements GoogleApiClient.Conn
         accelorometerX = (TextView) findViewById(R.id.accelerometerXData);
         accelorometerY = (TextView) findViewById(R.id.accelerometerYData);
         accelorometerZ = (TextView) findViewById(R.id.accelerometerZData);
-        buttonPressed = (TextView) findViewById(R.id.wearButtonPressedData);
+
+
+        gyroscopeX = (TextView) findViewById(R.id.gyroscopeXData);
+        gyroscopeY = (TextView) findViewById(R.id.gyroscopeYData);
+        gyroscopeZ = (TextView) findViewById(R.id.gyroscopeZData);
 
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -54,6 +75,12 @@ public class MainActivity extends DaggerActivity implements GoogleApiClient.Conn
                 .addApi(Wearable.API)
                 .build();
         googleApiClient.connect();
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensorGyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        orientationSensor = new Orientation(this.getApplicationContext(), this);
+        orientationSensor.init(1.0, 1.0, 1.0);
 
         sendMessageInThread(START_WEAR_ACTIVITY_MESSAGE);
     }
@@ -76,12 +103,16 @@ public class MainActivity extends DaggerActivity implements GoogleApiClient.Conn
                         accelorometerZ.setText(event.getMessage());
                     }
                 });
+        sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_GAME);
+        orientationSensor.on(2);
         super.onStart();
     }
 
     @Override
     protected void onStop() {
         sendMessageInThread(STOP_WEAR_ACTIVITY_MESSAGE);
+        sensorManager.unregisterListener(this, sensorGyroscope);
+        orientationSensor.off();
         super.onStop();
     }
 
@@ -100,6 +131,20 @@ public class MainActivity extends DaggerActivity implements GoogleApiClient.Conn
 
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        Sensor sensor = sensorEvent.sensor;
+
+        if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
     private void sendMessageInThread(String message) {
         Observable.just(message)
                 .doOnNext(this::sendMessageToConnectedNodes)
@@ -114,5 +159,12 @@ public class MainActivity extends DaggerActivity implements GoogleApiClient.Conn
                 Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), message, null);
             }
         });
+    }
+
+    @Override
+    public void orientation(Double AZIMUTH, Double PITCH, Double ROLL) {
+        gyroscopeX.setText(AZIMUTH+"");
+        gyroscopeY.setText(PITCH+"");
+        gyroscopeZ.setText(ROLL+"");
     }
 }

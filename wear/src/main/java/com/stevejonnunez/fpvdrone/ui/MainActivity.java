@@ -174,7 +174,6 @@ public class MainActivity extends DaggerActivity
                 .doOnNext(sensorEvent1 -> {
                     float valueX = sensorEvent.values[0];
                     float valueY = sensorEvent.values[1];
-                    float valueZ = sensorEvent.values[2];
 
                     int absValueX = Math.round(valueX);
                     if (Math.abs(absValueX - x) >= 1) {
@@ -185,11 +184,6 @@ public class MainActivity extends DaggerActivity
                     if (Math.abs(absValueY - y) >= 1) {
                         y = absValueY;
                         sendMessageInThread(new Message(MessagePath.ACCELEROMETER_Y_MESSAGE_PATH, String.valueOf(valueY)));
-                    }
-                    int absValueZ = Math.round(valueZ);
-                    if (Math.abs(absValueZ - z) >= 1) {
-                        z = absValueZ;
-                        sendMessageInThread(new Message(MessagePath.ACCELEROMETER_Z_MESSAGE_PATH, String.valueOf(valueZ)));
                     }
                 }).subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())

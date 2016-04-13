@@ -59,19 +59,55 @@
         android:text="3" />
 
     <TextView
-        android:id="@+id/wearButtonPressedLabel"
+        android:id="@+id/gyroscopeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_below="@id/accelerometerZLabel"
-        android:text="Wear Button Pressed: " />
+        android:text="Gyroscope" />
 
     <TextView
-        android:id="@+id/wearButtonPressedData"
+        android:id="@+id/gyroscopeXLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/wearButtonPressedLabel"
-        android:layout_toEndOf="@id/wearButtonPressedLabel"
+        android:layout_below="@id/gyroscopeLabel"
+        android:text="x: " />
+
+    <TextView
+        android:id="@+id/gyroscopeXData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/gyroscopeXLabel"
+        android:layout_toEndOf="@id/gyroscopeXLabel"
+        android:text="1" />
+
+    <TextView
+        android:id="@+id/gyroscopeYLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/gyroscopeXLabel"
+        android:text="y: " />
+
+    <TextView
+        android:id="@+id/gyroscopeYData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/gyroscopeYLabel"
+        android:layout_toEndOf="@id/gyroscopeYLabel"
+        android:text="2" />
+
+    <TextView
+        android:id="@+id/gyroscopeZLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/gyroscopeYLabel"
+        android:text="z: " />
+
+    <TextView
+        android:id="@+id/gyroscopeZData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/gyroscopeZLabel"
+        android:layout_toEndOf="@id/gyroscopeZLabel"
         android:text="3" />
 
 

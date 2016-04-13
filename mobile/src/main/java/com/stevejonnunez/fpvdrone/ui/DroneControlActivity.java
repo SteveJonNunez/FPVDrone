@@ -4,14 +4,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 
+import com.golshadi.orientationSensor.sensors.Orientation;
+import com.golshadi.orientationSensor.utils.OrientationSensorInterface;
 import com.parrot.freeflight.drone.DroneConfig;
 import com.parrot.freeflight.service.DroneControlService;
 import com.parrot.freeflight.ui.GLTextureView;
@@ -35,13 +33,16 @@ import rx.android.schedulers.AndroidSchedulers;
  */
 public class DroneControlActivity extends FPVDroneBaseActivity
         implements ServiceConnection,
-        SensorEventListener {
+        OrientationSensorInterface {
     GLTextureView glView1;
     GLTextureView glView2;
     VideoStageRenderer renderer;
 
-    SensorManager sensorManager;
-    Sensor sensorGyroscope;
+    double base = 0;
+    boolean flying = false;
+    boolean getBase= false;
+
+    Orientation orientationSensor;
 
     DroneControlService droneControlService;
 
@@ -59,13 +60,11 @@ public class DroneControlActivity extends FPVDroneBaseActivity
         glView1.setEGLContextClientVersion(2);
         glView2.setEGLContextClientVersion(2);
 
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensorGyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
         renderer = new VideoStageRenderer(this, null);
 
         bindService(new Intent(this, DroneControlService.class), this, Context.BIND_AUTO_CREATE);
-
+        orientationSensor = new Orientation(this.getApplicationContext(), this);
+        orientationSensor.init(1.0, 1.0, 1.0);
         initGLTextureView();
     }
 
@@ -79,16 +78,19 @@ public class DroneControlActivity extends FPVDroneBaseActivity
                         triggerTakeOff();
                     } else if (event.getPath().equals(ListenerServiceEvent.TAKEOFF_DRONE)) {
                         triggerTakeOff();
+                    } else if (event.getPath().equals(ListenerServiceEvent.ACCELEROMETER_X_WEAR_DATA)) {
+                        pitch(Float.valueOf(event.getMessage()));
+                    } else if (event.getPath().equals(ListenerServiceEvent.ACCELEROMETER_Y_WEAR_DATA)) {
+                        roll(Float.valueOf(event.getMessage()));
                     }
                 });
-
-        sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_GAME);
+        orientationSensor.on(2);
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-        sensorManager.unregisterListener(this, sensorGyroscope);
+        orientationSensor.off();
         super.onStop();
     }
 
@@ -134,17 +136,13 @@ public class DroneControlActivity extends FPVDroneBaseActivity
     }
 
     @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        Sensor sensor = sensorEvent.sensor;
-
-        if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-
+    public void orientation(Double AZIMUTH, Double PITCH, Double ROLL) {
+        if(getBase) {
+            base = AZIMUTH;
+            getBase = false;
         }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        altitude(ROLL);
+        yaw(AZIMUTH);
     }
 
     private void initGLTextureView() {
@@ -160,15 +158,64 @@ public class DroneControlActivity extends FPVDroneBaseActivity
             droneConfig.setAltitudeLimit(DroneConfig.ALTITUDE_MIN);
             droneConfig.setVertSpeedMax(DroneConfig.VERT_SPEED_MIN);
             droneConfig.setYawSpeedMax(DroneConfig.YAW_MIN);
-            droneConfig.setTilt(DroneConfig.TILT_MIN);
+            droneConfig.setTilt(15);
             droneConfig.setOutdoorFlight(false);
-            droneConfig.setOutdoorHull(false);
+            droneConfig.setOutdoorHull(true);
         }
     }
 
     private void triggerTakeOff() {
         if (droneControlService != null) {
+            flying = !flying;
+            if(flying)
+                getBase = true;
             droneControlService.triggerTakeOff();
+        }
+
+    }
+
+    private void roll(float val) {
+        if (droneControlService != null && flying) {
+            if (val < -6f) {
+                droneControlService.setRoll(-1);
+            } else if (val > 6f)
+                droneControlService.setRoll(1);
+            else
+                droneControlService.setRoll(0);
+        }
+
+    }
+
+    private void pitch(float val) {
+        if (droneControlService != null && flying) {
+            if (val < -6f) {
+                droneControlService.setPitch(1);
+            } else if (val > 6f)
+                droneControlService.setPitch(-1);
+            else
+                droneControlService.setPitch(0);
+        }
+    }
+
+    private void altitude(double val) {
+        if (droneControlService != null && flying) {
+            if (val < -130) {
+                droneControlService.setGaz(1);
+            } else if (val > -50)
+                droneControlService.setGaz(-1);
+            else
+                droneControlService.setGaz(0);
+        }
+    }
+
+    private void yaw(double val) {
+        if (droneControlService != null && !getBase && flying) {
+            if (val < base-50) {
+                droneControlService.setYaw(-1);
+            } else if (val > base+50)
+                droneControlService.setYaw(1);
+            else
+                droneControlService.setYaw(0);
         }
     }
 }
