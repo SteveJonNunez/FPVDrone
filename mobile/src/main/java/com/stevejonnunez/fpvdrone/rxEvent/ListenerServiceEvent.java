@@ -10,6 +10,9 @@ public class ListenerServiceEvent {
     public static final String ACCELEROMETER_Y_WEAR_DATA = "accelerometerYWearData";
     public static final String ACCELEROMETER_Z_WEAR_DATA = "accelerometerZWearData";
 
+    public static final String LAND_DRONE = "landDrone";
+    public static final String TAKEOFF_DRONE = "takeoffDrone";
+
     String path;
     String message;
 

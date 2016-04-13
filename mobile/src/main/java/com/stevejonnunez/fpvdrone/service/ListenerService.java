@@ -44,6 +44,10 @@ public class ListenerService extends WearableListenerService {
             rxListenerServiceEventBus.send(new ListenerServiceEvent(ListenerServiceEvent.ACCELEROMETER_Z_WEAR_DATA, message));
         } else if (messageEvent.getPath().equals(MessagePath.CONNECT_TO_DRONE_MESSAGE_PATH)) {
             rxListenerServiceEventBus.send(new ListenerServiceEvent(ListenerServiceEvent.CONNECT_TO_DRONE));
+        } else if (messageEvent.getPath().equals(MessagePath.LAND_DRONE_MESSAGE_PATH)) {
+            rxListenerServiceEventBus.send(new ListenerServiceEvent(ListenerServiceEvent.LAND_DRONE));
+        } else if (messageEvent.getPath().equals(MessagePath.TAKEOFF_DRONE_MESSAGE_PATH)) {
+            rxListenerServiceEventBus.send(new ListenerServiceEvent(ListenerServiceEvent.TAKEOFF_DRONE));
         }
     }
 }

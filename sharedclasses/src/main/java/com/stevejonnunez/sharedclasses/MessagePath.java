@@ -13,9 +13,9 @@ public class MessagePath {
 
     public static final String DRONE_FOUND_MESSAGE_PATH = "/droneFound";
 
-    public static final String CONNECT_TO_DRONE_MESSAGE_PATH = "/accelerometerData";
-    public static final String LAND_DRONE_MESSAGE_PATH = "/accelerometerData";
-    public static final String TAKEOFF_DRONE_MESSAGE_PATH = "/accelerometerData";
+    public static final String CONNECT_TO_DRONE_MESSAGE_PATH = "/connectToDrone";
+    public static final String LAND_DRONE_MESSAGE_PATH = "/landDrone";
+    public static final String TAKEOFF_DRONE_MESSAGE_PATH = "/takeoffDrone";
 
     public static final String DRONE_CONNECT_SUCCESS_MESSAGE_PATH = "/droneConnectSuccess";
 }

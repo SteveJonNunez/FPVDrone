@@ -8,7 +8,7 @@ import com.google.vrtoolkit.cardboard.CardboardView;
 import com.parrot.freeflight.tasks.CheckDroneNetworkAvailabilityTask;
 import com.stevejonnunez.fpvdrone.R;
 import com.stevejonnunez.fpvdrone.rxEvent.ListenerServiceEvent;
-import com.stevejonnunez.fpvdrone.ui.base.FPVDroneBaseActivity;
+import com.stevejonnunez.fpvdrone.ui.base.FPVDroneCardboardBaseActivity;
 import com.stevejonnunez.fpvdrone.util.rx.RxEventBus;
 import com.stevejonnunez.sharedclasses.MessagePath;
 import com.sveder.cardboardpassthrough.CardboardOverlayView;
@@ -26,7 +26,7 @@ import rx.schedulers.Schedulers;
  * Created by kryonex on 4/11/2016.
  */
 public class BeginningActivity
-        extends FPVDroneBaseActivity {
+        extends FPVDroneCardboardBaseActivity {
 
     CardboardView cardboardView;
     CardboardOverlayView cardboardOverlayView;

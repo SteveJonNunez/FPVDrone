@@ -6,9 +6,15 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
-import com.stevejonnunez.fpvdrone.util.dagger.DaggerActivity;
+import com.google.vrtoolkit.cardboard.CardboardView;
+import com.google.vrtoolkit.cardboard.Eye;
+import com.google.vrtoolkit.cardboard.HeadTransform;
+import com.google.vrtoolkit.cardboard.Viewport;
+import com.stevejonnunez.fpvdrone.util.dagger.CardboardDaggerActivity;
 
 import java.util.List;
+
+import javax.microedition.khronos.egl.EGLConfig;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -17,8 +23,10 @@ import rx.schedulers.Schedulers;
 /**
  * Created by kryonex on 4/12/2016.
  */
-public class FPVDroneBaseActivity extends DaggerActivity
-        implements GoogleApiClient.ConnectionCallbacks,
+public class FPVDroneCardboardBaseActivity
+        extends CardboardDaggerActivity
+        implements CardboardView.StereoRenderer,
+        GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     GoogleApiClient googleApiClient;
@@ -35,8 +43,9 @@ public class FPVDroneBaseActivity extends DaggerActivity
     }
 
     @Override
-    protected List<Object> getModules() {
-        return null;
+    protected void onStop() {
+//        sendMessageInThread(MessagePath.STOP_WEAR_ACTIVITY_MESSAGE_PATH);
+        super.onStop();
     }
 
     @Override
@@ -52,6 +61,41 @@ public class FPVDroneBaseActivity extends DaggerActivity
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onNewFrame(HeadTransform headTransform) {
+
+    }
+
+    @Override
+    public void onDrawEye(Eye eye) {
+
+    }
+
+    @Override
+    public void onFinishFrame(Viewport viewport) {
+
+    }
+
+    @Override
+    public void onSurfaceChanged(int i, int i1) {
+
+    }
+
+    @Override
+    public void onSurfaceCreated(EGLConfig eglConfig) {
+
+    }
+
+    @Override
+    public void onRendererShutdown() {
+
+    }
+
+    @Override
+    protected List<Object> getModules() {
+        return null;
     }
 
     public void sendMessageInThread(String message) {

@@ -78,6 +78,11 @@ public class MainActivity extends DaggerActivity implements SensorEventListener,
                         finish();
                     else if (event.getMessage().equals(ListenerServiceEvent.DRONE_FOUND))
                         button.setEnabled(true);
+                    else if (event.getMessage().equals(ListenerServiceEvent.DRONE_CONNECTED)) {
+                        isConnected = true;
+                        button.setEnabled(true);
+                        setButtonToTakeOff();
+                    }
                 });
         super.onStart();
 
@@ -97,18 +102,40 @@ public class MainActivity extends DaggerActivity implements SensorEventListener,
 
     public void buttonPressed(View view) {
         if (!isConnected) {
-            button.setText("Connecting");
-            button.setEnabled(false);
-            sendMessageInThread(new Message(MessagePath.CONNECT_TO_DRONE_MESSAGE_PATH));
+            setButtonToConnect();
         } else if (!isFlying) {
-            isFlying = true;
-            button.setBackgroundResource(R.drawable.land_button);
-            button.setText("Land");
+            setButtonToLand();
+            sendTakeOffCommandToDrone();
         } else {
-            isFlying = false;
-            button.setBackgroundResource(R.drawable.takeoff_button);
-            button.setText("Takeoff");
+            setButtonToTakeOff();
+            sendLandCommandToDrone();
         }
+    }
+
+    private void sendTakeOffCommandToDrone() {
+        sendMessageInThread(MessagePath.TAKEOFF_DRONE_MESSAGE_PATH);
+    }
+
+    private void sendLandCommandToDrone() {
+        sendMessageInThread(MessagePath.LAND_DRONE_MESSAGE_PATH);
+    }
+
+    private void setButtonToConnect() {
+        button.setText("Connecting");
+        button.setEnabled(false);
+        sendMessageInThread(new Message(MessagePath.CONNECT_TO_DRONE_MESSAGE_PATH));
+    }
+
+    private void setButtonToLand() {
+        isFlying = true;
+        button.setBackgroundResource(R.drawable.land_button);
+        button.setText("Land");
+    }
+
+    private void setButtonToTakeOff() {
+        isFlying = false;
+        button.setBackgroundResource(R.drawable.takeoff_button);
+        button.setText("Takeoff");
     }
 
     @Override
@@ -167,6 +194,10 @@ public class MainActivity extends DaggerActivity implements SensorEventListener,
                 .subscribe();
     }
 
+    private void sendMessageInThread(String messagePath) {
+        sendMessageInThread(new Message(messagePath));
+    }
+
     private void sendMessageInThread(Message message) {
         Observable.just(message)
                 .doOnNext(this::sendMessageToConnectedNodes)
@@ -177,7 +208,7 @@ public class MainActivity extends DaggerActivity implements SensorEventListener,
 
     private void sendMessageToConnectedNodes(Message message) {
         String path = message.getPath();
-        byte[] messageBytes = message.getMessage() == null?null:message.getMessage().getBytes();
+        byte[] messageBytes = message.getMessage() == null ? null : message.getMessage().getBytes();
         Wearable.NodeApi.getConnectedNodes(googleApiClient).setResultCallback(nodes -> {
             for (Node node : nodes.getNodes()) {
                 Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, messageBytes);

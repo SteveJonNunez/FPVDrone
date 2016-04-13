@@ -1,6 +1,5 @@
 package com.stevejonnunez.fpvdrone.ui;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,18 +13,33 @@ import com.parrot.freeflight.service.DroneControlService;
 import com.parrot.freeflight.ui.GLTextureView;
 import com.parrot.freeflight.video.VideoStageRenderer;
 import com.stevejonnunez.fpvdrone.R;
+import com.stevejonnunez.fpvdrone.rxEvent.ListenerServiceEvent;
+import com.stevejonnunez.fpvdrone.ui.base.FPVDroneBaseActivity;
+import com.stevejonnunez.fpvdrone.util.rx.RxEventBus;
+import com.stevejonnunez.sharedclasses.MessagePath;
+
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * FPVDrone
  * Created by steven on 4/12/2016.
  */
-public class DroneControlActivity extends Activity
+public class DroneControlActivity extends FPVDroneBaseActivity
         implements ServiceConnection {
     GLTextureView glView1;
     GLTextureView glView2;
     VideoStageRenderer renderer;
 
     DroneControlService droneControlService;
+
+    @Inject
+    @Named("ListenerServiceEventBus")
+    RxEventBus<ListenerServiceEvent> rxListenerServiceEventBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +59,29 @@ public class DroneControlActivity extends Activity
     }
 
     @Override
+    protected void onStart() {
+        rxListenerServiceEventBus.toObserverable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(event -> {
+                    if (event.getPath().equals(ListenerServiceEvent.LAND_DRONE)) {
+                        triggerTakeOff();
+                    } else if (event.getPath().equals(ListenerServiceEvent.TAKEOFF_DRONE)) {
+                        triggerTakeOff();
+                    }
+                });
+        super.onStart();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         unbindService(this);
+    }
+
+    @Override
+    protected List<Object> getModules() {
+        return null;
     }
 
     @Override
@@ -57,6 +91,7 @@ public class DroneControlActivity extends Activity
         droneControlService.resume();
         droneControlService.requestDroneStatus();
         setDroneSettings();
+        sendMessageInThread(MessagePath.DRONE_CONNECT_SUCCESS_MESSAGE_PATH);
     }
 
     @Override

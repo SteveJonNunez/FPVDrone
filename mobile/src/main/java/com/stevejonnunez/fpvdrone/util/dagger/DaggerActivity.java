@@ -1,7 +1,7 @@
 package com.stevejonnunez.fpvdrone.util.dagger;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import dagger.ObjectGraph;
  * MicAndroidClient
  * Created by steven on 2/26/2015.
  */
-public abstract class DaggerActivity extends AppCompatActivity{
+public abstract class DaggerActivity extends Activity {
     private ObjectGraph activityGraph;
 
     @Override
