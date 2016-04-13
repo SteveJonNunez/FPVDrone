@@ -30,7 +30,9 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MainActivity extends DaggerActivity implements SensorEventListener, GoogleApiClient.ConnectionCallbacks,
+public class MainActivity extends DaggerActivity
+        implements SensorEventListener,
+        GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
     Button button;
 
@@ -84,15 +86,15 @@ public class MainActivity extends DaggerActivity implements SensorEventListener,
                         setButtonToTakeOff();
                     }
                 });
+        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         super.onStart();
 
-        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
     protected void onStop() {
-        super.onStop();
         sensorManager.unregisterListener(this, sensorAccelerometer);
+        super.onStop();
     }
 
     @Override

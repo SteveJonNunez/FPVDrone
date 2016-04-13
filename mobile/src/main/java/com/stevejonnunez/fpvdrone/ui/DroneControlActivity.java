@@ -4,6 +4,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
@@ -30,10 +34,14 @@ import rx.android.schedulers.AndroidSchedulers;
  * Created by steven on 4/12/2016.
  */
 public class DroneControlActivity extends FPVDroneBaseActivity
-        implements ServiceConnection {
+        implements ServiceConnection,
+        SensorEventListener {
     GLTextureView glView1;
     GLTextureView glView2;
     VideoStageRenderer renderer;
+
+    SensorManager sensorManager;
+    Sensor sensorGyroscope;
 
     DroneControlService droneControlService;
 
@@ -50,6 +58,9 @@ public class DroneControlActivity extends FPVDroneBaseActivity
         glView2 = (GLTextureView) findViewById(R.id.rightEye);
         glView1.setEGLContextClientVersion(2);
         glView2.setEGLContextClientVersion(2);
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensorGyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         renderer = new VideoStageRenderer(this, null);
 
@@ -70,7 +81,15 @@ public class DroneControlActivity extends FPVDroneBaseActivity
                         triggerTakeOff();
                     }
                 });
+
+        sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_GAME);
         super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        sensorManager.unregisterListener(this, sensorGyroscope);
+        super.onStop();
     }
 
     @Override
@@ -112,6 +131,20 @@ public class DroneControlActivity extends FPVDroneBaseActivity
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        Sensor sensor = sensorEvent.sensor;
+
+        if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 
     private void initGLTextureView() {
