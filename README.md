@@ -1,5 +1,6 @@
 First Person View Drone (FPV Drone)
 =========
+<img src="https://raw.githubusercontent.com/SteveJonNunez/FPVDrone/master/mobile/src/main/assets/FPVDrone.jpg" width="500">
 
 FPV Drone is an Android application that uses Google Cardboard to provide a FPV Drone experience. An Android wear device and the phone inside the Google Cardboard is used to control the drone. The Android wear's accelerometer would control the drone's roll and pitch. While the phone's gyroscope will control the drone's yaw and altitude. The FPV Drone app currently only works with the [AR Drone 2.0][1].
 
@@ -25,3 +26,4 @@ License
     limitations under the License.
 
  [1]: http://ardrone2.parrot.com/
+ [FPVImage]: https://raw.githubusercontent.com/SteveJonNunez/FPVDrone/master/mobile/src/main/assets/FPVDrone.jpg
