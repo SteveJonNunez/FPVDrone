@@ -82,9 +82,9 @@ public class DroneControlActivity extends FPVDroneBaseActivity
                     } else if (event.getPath().equals(ListenerServiceEvent.TAKEOFF_DRONE)) {
                         triggerTakeOff();
                     } else if (event.getPath().equals(ListenerServiceEvent.ACCELEROMETER_X_WEAR_DATA)) {
-                        pitch(Integer.valueOf(event.getMessage()));
+                        pitch(Float.valueOf(event.getMessage()));
                     } else if (event.getPath().equals(ListenerServiceEvent.ACCELEROMETER_Y_WEAR_DATA)) {
-                        roll(Integer.valueOf(event.getMessage()));
+                        roll(Float.valueOf(event.getMessage()));
                     }
                 });
         orientationSensor.on(2);
@@ -178,7 +178,7 @@ public class DroneControlActivity extends FPVDroneBaseActivity
 
     }
 
-    private void roll(int val) {
+    private void roll(float val) {
         if (droneControlService != null && flying) {
             if (val < -6) {
                 isRolling = true;
@@ -197,7 +197,7 @@ public class DroneControlActivity extends FPVDroneBaseActivity
 
     }
 
-    private void pitch(int val) {
+    private void pitch(float val) {
         if (droneControlService != null && flying) {
             if (val < -6f) {
                 isPitching = true;
