@@ -6,7 +6,7 @@ FPV Drone is an Android application that uses Google Cardboard to provide a FPV 
 
 Video Demo
 --------
-[![FPV Drone Demo](http://img.youtube.com/vi/fJeVgNrLuSE/0.jpg)](http://www.youtube.com/watch?v=fJeVgNrLuSE)
+[![FPV Drone Demo](http://img.youtube.com/vi/PxZw-HddLS0/0.jpg)](http://www.youtube.com/watch?v=PxZw-HddLS0)
 
 License
 -------
